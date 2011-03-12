@@ -140,7 +140,7 @@ app.get('/blog', BlogPost.loadAll, BlogPost.count, function(req, res) {
       'active': req.query.page,
     }
   }});
-})
+});
 
 app.get('/error/:type', function(req, res) {
   var title = 'Access Denied';
@@ -154,6 +154,30 @@ app.get('/error/:type', function(req, res) {
   }
   res.render('error', {locals: {
     title: 'Error',
+  }});
+});
+
+/**
+ * Todo Routing
+ */
+app.get('/item/new/:type', function(req, res) {
+  res.render('edit_form', {locals: {
+    'title': 'New ToDo Item',
+    'type': req.params.type,
+    'form': {
+      'title': {
+        'type': 'textfield',
+        'title': 'Title',  
+      },
+      'body': {
+        'type': 'textfield',
+        'title': 'Body',  
+      },
+      'submit': {
+        'type': 'submit',
+        'value': 'Save',  
+      },
+    },
   }});
 });
 
