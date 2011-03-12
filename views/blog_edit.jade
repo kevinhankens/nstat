@@ -1,0 +1,13 @@
+form(method: edit_method, action: edit_action)
+  input(name: 'blog[id]', type: 'hidden', value: edit_id)
+  .form-item
+    h5 Title
+    input(name: 'blog[title]', type: 'textfield', value: edit_title)
+  .form-item
+    h5 Body
+    textarea(name: 'blog[body]', rows: 20, cols: 80)= edit_body
+  .form-item
+    h5 URL
+    input(name: 'blog[url]', type: 'textfield', value: edit_url)
+  .form-item
+    input(type: 'submit', value: 'Save')

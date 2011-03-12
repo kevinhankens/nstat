@@ -1,0 +1,9 @@
+form(action: '/account', method: 'post')
+  .form-item
+    h5 Username
+    input(type: 'textfield', name: 'login[username]')
+  .form-item
+    h5 Password
+    input(type: 'password', name: 'login[password]')
+  .form-item
+    input(type: 'submit', value: 'Login')

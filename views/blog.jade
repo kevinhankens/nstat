@@ -1,0 +1,8 @@
+- if (loggedIn) {
+  ul.admin-links
+    li 
+      a(href: '/blog/' + blog._id + '/edit') edit
+    li 
+      a(href: '/blog/' + blog._id + '/delete') delete
+- }
+article#blog= blog.body

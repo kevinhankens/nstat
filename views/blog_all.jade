@@ -1,0 +1,9 @@
+.pager-status= 'Showing ' + pager.start + '-' + pager.range + ' of ' + pager.total
+- blogs.forEach(function(item) {
+  article.blog
+    h3
+      - url = typeof item.url != 'undefined' ? item.url : '/blog/' + item._id
+      a(href: url)= item.title
+    .body!= item.body
+- });
+.pager!= partial('pager', pager)

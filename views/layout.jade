@@ -1,0 +1,20 @@
+!!! 5
+html
+  head
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    title!= siteName
+  body
+    #main
+      header
+        nav(class: 'clearfix')
+          a(href: '/') Home
+          a(href: '/blog') Blog
+          -if (loggedIn)
+            a(href: '/account') User Account
+            a(href: '/account/logout') Logout
+          -else
+            a(href: '/account') Login
+        h1!= title
+        - if (flashMessages.info.length || flashMessages.error.length)
+          #flash!= partial('flash')
+      #container!= body

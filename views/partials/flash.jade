@@ -1,0 +1,8 @@
+- ['error', 'info'].forEach(function(type) {
+  - if (flashMessages[type].length)
+    ul(class=type)
+      - flashMessages[type].forEach(function(item) {
+        li
+          !{item}
+      - });
+- });

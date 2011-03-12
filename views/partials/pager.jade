@@ -1,0 +1,8 @@
+.pager-title Skip to page
+ul
+  - var p = 0
+  - for(var i = 1; i <= pager.total; i += 10)
+    - p++
+    - var class = p == pager.active ? 'active' : '';
+    li
+      a(href: '/blog?page=' + p, 'class': class)= p

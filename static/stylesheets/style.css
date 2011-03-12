@@ -1,0 +1,194 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/** Sitewide Styles **/
+
+body {
+  font-family: "Helvetica Neue", helvetica, sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+.clearfix {
+  display: inline-block;
+}
+
+#main {
+  width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#flash ul {
+  padding: 0.5em; 
+  margin-top: 0.5em; 
+}
+#flash ul.info {
+  border: 1px dotted #999;
+  background: #ccc;
+  color: #666;
+  margin-bottom: 0.5em; 
+}
+#flash ul.error {
+  border: 1px dotted #900;
+  background: #e99;
+  color: #900;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  font-family: "Georgia", "Tahoma", serif;
+}
+h1 {
+  font-size: 2em;
+  margin-bottom: 1em;
+}
+h2 {
+  font-size: 1.8em;
+}
+h3 {
+  font-size: 1.6em;
+}
+h4 {
+  font-size: 1.4em;
+}
+h5 {
+  font-size: 1.2em;
+}
+h6 {
+  font-size: 1em;
+}
+
+/** Form Items **/
+.form-item {
+  clear: left;
+  border-bottom: 1px dotted #ccc;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+.form-item:hover {
+  background: #ccc;
+  border-bottom: 1px dotted #999;
+}
+.form-item h5 {
+  float: left;
+  width: 200px;
+  align: right;
+}
+
+/** Menu **/
+nav {
+  margin-bottom: 0.5em;
+  border-bottom: 1px dotted #999;
+}
+nav a,
+nav a:link,
+nav a:visited,
+nav a:active,
+nav a:hover {
+  text-decoration: none;
+  color: #336699;
+  margin-right: 0.5em;
+}
+nav a:hover {
+  text-decoration: underline;
+}
+
+/** Pager **/
+.pager-status {
+  margin-bottom: 1em;
+}
+.pager-title {
+  float: left;
+  margin-right: 1em;
+}
+.pager {
+  margin-top: 1em;
+}
+
+.pager ul {
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.pager ul li {
+  list-style-type: none;
+  background-image: none;
+  float: left;
+  margin: 0 0.5em 0 0;
+  padding: 0 0 0.25em 0;
+}
+
+.pager ul li a,
+.pager ul li a:link,
+.pager ul li a:visited,
+.pager ul li a:hover,
+.pager ul li a:active
+{
+  text-decoration: none;
+  color: #336699;
+}
+
+.pager ul li a.active,
+.pager ul li a.active:link,
+.pager ul li a.active:visited,
+.pager ul li a.active:hover,
+.pager ul li a.active:active
+{
+  text-decoration: none;
+  color: #333;
+}
