@@ -175,9 +175,9 @@ app.get('/error/:type', function(req, res) {
  * Generic Form Builder
  * @todo build authentication methods
  */
-app.get('/create/new/:type', function(req, res) {
+app.get('/new/:type', function(req, res) {
   form_definition = Forms.getForm(req.params.type);
-  form_definition.action = '/create/new/' + req.params.type;
+  form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
 
   res.render('edit_form', {locals: {
@@ -188,7 +188,7 @@ app.get('/create/new/:type', function(req, res) {
 });
 
 // @todo we need sanitation here.
-app.post('/create/new/:type', function(req, res) {
+app.post('/new/:type', function(req, res) {
   data_obj = Data.getType(req.params.type);
   item = new data_obj.model();
   item.type = req.params.type;
@@ -204,21 +204,24 @@ app.post('/create/new/:type', function(req, res) {
 app.get('/view/:type/:id', function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadOne(req.params.id, function(docs) {
+    docs.type = req.params.type;
     res.render(req.params.type, {locals: {
       'title': docs.title,
-      'blog': docs
+      'data': docs
     }});
   });
 });
 
-app.get('/edit/:type/:id', function(req, res) {
+app.get('/edit/:type/:id', UserAccount.requireLogin, function(req, res) {
   data_obj = Data.getType(req.params.type);
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/save/' + req.params.type + '/' + req.params.id;
 
   data_obj.loadOne(req.params.id, function(docs) {
     for (element in form_definition.elements) {
-      form_definition.elements[element].value = docs[element];
+      if (form_definition.elements[element].type != 'submit') {
+        form_definition.elements[element].value = docs[element];
+      }
     }
     var itemForm = new Forms.Form(form_definition);
 
@@ -230,7 +233,7 @@ app.get('/edit/:type/:id', function(req, res) {
   });
 });
 
-app.post('/save/:type/:id', function(req, res) {
+app.post('/save/:type/:id', UserAccount.requireLogin, function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadOne(req.params.id, function(docs) {
     for (element in req.body) {
@@ -239,6 +242,23 @@ app.post('/save/:type/:id', function(req, res) {
     docs.save();
 
     res.redirect('/view/' + req.params.type + '/' + req.params.id);
+  });
+});
+
+app.get('/delete/:type/:id', function(req, res) {
+  res.render('delete_confirm', {locals: {
+    title: 'Confirm',
+    type: req.params.type,
+    id: req.params.id,
+  }});
+});
+
+app.get('/delete-confirm/:type/:id', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  data_obj.loadOne(req.params.id, function(docs) {
+    docs.remove();
+    req.flash('info', 'Deleted!');
+    res.redirect('/');
   });
 });
 

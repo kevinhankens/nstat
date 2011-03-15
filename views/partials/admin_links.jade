@@ -1,0 +1,8 @@
+- if (loggedIn) {
+  ul.admin-links
+    li 
+      a(href: '/edit/' + data.type + '/' + data._id) edit
+    li 
+      a(href: '/delete/' + data.type + '/' + data._id) delete
+- }
+

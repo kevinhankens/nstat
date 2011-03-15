@@ -48,15 +48,16 @@ var ToDoData = {
       },
     },
   },
-  loadOne: function(req, res, next) {
-    BlogData.model.findOne({_id: req.params.id}, function(err, docs) {
+  loadOne: function(id, next) {
+    ToDoData.model.findOne({_id: id}, function(err, docs) {
       if (!docs) {
-        req.flash('error', 'Post not found.');
-        res.redirect('/error/404');
+        // @todo what's the best way to integrate res here?
+        //req.flash('error', 'Post not found.');
+        //res.redirect('/error/404');
+        next({});
       } 
       else {
-        req.blog = docs;
-        next(); 
+        next(docs); 
       }
     });
   },
@@ -116,8 +117,9 @@ var BlogData = {
   loadOne: function(id, next) {
     BlogData.model.findOne({_id: id}, function(err, docs) {
       if (!docs) {
-        req.flash('error', 'Post not found.');
-        res.redirect('/error/404');
+        // @todo what's the best way to integrate flash and redirection?
+        //req.flash('error', 'Post not found.');
+        //res.redirect('/error/404');
       } 
       else {
         next(docs); 
