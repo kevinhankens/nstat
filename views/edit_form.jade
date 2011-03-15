@@ -1,6 +1,1 @@
-- for (item in form) {
-  .form-item
-    - if (typeof form[item].title != 'undefined')
-      h5= form[item].title
-    input(type: form[item].type, value: form[item].value)
-- }
+#edit-form!= form

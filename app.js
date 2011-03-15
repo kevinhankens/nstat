@@ -23,7 +23,21 @@ app.dynamicHelpers(require(__dirname + '/helpers/dynamicHelpers.js').dynamicHelp
 // Models
 Data = require(__dirname + '/models/data.js');
 BlogPost = Data.Blog;
+ToDo = Data.ToDo;
 UserAccount = Data.User;
+Data.type_to_object = {
+  'blog': 'Blog',
+  'todo': 'ToDo',
+};
+Data.getType = function(type) {
+  return Data[this.type_to_object[type]];
+};
+
+// Forms
+Forms = require(__dirname + '/forms.js');
+Forms.getForm = function(type) {
+  return Data[Data.type_to_object[type]].form;
+}
 
 // Routing
 app.get('/', function(req, res) {
@@ -158,27 +172,74 @@ app.get('/error/:type', function(req, res) {
 });
 
 /**
- * Todo Routing
+ * Generic Form Builder
+ * @todo build authentication methods
  */
-app.get('/item/new/:type', function(req, res) {
+app.get('/create/new/:type', function(req, res) {
+  form_definition = Forms.getForm(req.params.type);
+  form_definition.action = '/create/new/' + req.params.type;
+  var itemForm = new Forms.Form(form_definition);
+
   res.render('edit_form', {locals: {
-    'title': 'New ToDo Item',
+    'title': form_definition.title,
     'type': req.params.type,
-    'form': {
-      'title': {
-        'type': 'textfield',
-        'title': 'Title',  
-      },
-      'body': {
-        'type': 'textfield',
-        'title': 'Body',  
-      },
-      'submit': {
-        'type': 'submit',
-        'value': 'Save',  
-      },
-    },
+    'form': itemForm.renderForm(),
   }});
+});
+
+// @todo we need sanitation here.
+app.post('/create/new/:type', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  item = new data_obj.model();
+  item.type = req.params.type;
+  for (element in req.body) {
+    item[element] = req.body[element];
+  }
+  item.save();
+
+  res.redirect('/view/' + req.params.type + '/' + item._id);
+});
+
+// @todo needs has_method and has_template checks
+app.get('/view/:type/:id', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  data_obj.loadOne(req.params.id, function(docs) {
+    res.render(req.params.type, {locals: {
+      'title': docs.title,
+      'blog': docs
+    }});
+  });
+});
+
+app.get('/edit/:type/:id', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  form_definition = Forms.getForm(req.params.type);
+  form_definition.action = '/save/' + req.params.type + '/' + req.params.id;
+
+  data_obj.loadOne(req.params.id, function(docs) {
+    for (element in form_definition.elements) {
+      form_definition.elements[element].value = docs[element];
+    }
+    var itemForm = new Forms.Form(form_definition);
+
+    res.render('edit_form', {locals: {
+      'title': form_definition.title,
+      'type': req.params.type,
+      'form': itemForm.renderForm(),
+    }});
+  });
+});
+
+app.post('/save/:type/:id', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  data_obj.loadOne(req.params.id, function(docs) {
+    for (element in req.body) {
+      docs[element] = req.body[element];
+    }
+    docs.save();
+
+    res.redirect('/view/' + req.params.type + '/' + req.params.id);
+  });
 });
 
 app.listen(3000);
