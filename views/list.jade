@@ -1,0 +1,8 @@
+.pager-status= 'Showing ' + pager.start + '-' + pager.range + ' of ' + pager.total
+- for (item in data) {
+  article
+    h3
+      a(href: '/view/' + type + '/' + data[item]._id)= data[item].title
+    .body!= data[item].body
+- }
+.pager!= partial('pager', pager)

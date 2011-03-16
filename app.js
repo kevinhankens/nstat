@@ -70,29 +70,6 @@ app.post('/account', UserAccount.login, function(req, res) {
   res.redirect('/account');
 });
 
-app.get('/blog/new', UserAccount.requireLogin, function(req, res) {
-  res.render('blog_edit', {locals: {
-    'title': 'New Blog Post',
-    'edit_method': 'post',
-    'edit_action': '/blog/new',
-    'edit_id': '',
-    'edit_title': '',
-    'edit_body': '',
-    'edit_url': '',
-  }});
-});
-
-app.post('/blog/new', UserAccount.requireLogin, function(req, res) {
-  post = new BlogPost.model();
-  post.title = req.body.blog.title;
-  post.body = req.body.blog.body;
-  post.url = req.body.blog.url;
-  post.created = post.modified = new Date().getTime();
-  post.save()
-
-  res.redirect('/blog/' + post._id);
-});
-
 app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   res.render('blog', {locals: {
     'title': req.blog.title,
@@ -100,60 +77,19 @@ app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   }});
 });
 
-app.get('/blog/:id', BlogPost.loadOne, function(req, res) {
-  res.render('blog', {locals: {
-    'title': req.blog.title,
-    'blog': req.blog
-  }});
-});
-
-app.get('/blog/:id/delete', UserAccount.requireLogin, BlogPost.loadOne, function(req, res) {
-  res.render('blog_delete', {locals: {
-    'title': 'Are you sure you wish to delete: ' + req.blog.title + '?',
-    'edit_action': '/blog/' + req.blog._id + '/delete',
-    'edit_method': 'post',
-    'cancel_url': '/blog/' + req.blog._id,
-  }});
-});
-
-app.post('/blog/:id/delete', UserAccount.requireLogin, BlogPost.loadOne, function(req, res) {
-  req.blog.remove();
-  req.flash('info', 'Blog post deleted.');
-  res.redirect('/blog');
-});
-
-app.get('/blog/:id/edit', UserAccount.requireLogin, BlogPost.loadOne, function(req, res) {
-  res.render('blog_edit', {locals: {
-    'title': 'Edit Blog Post',
-    'edit_method': 'post',
-    'edit_action': '/blog/' + req.blog.id + '/edit',
-    'edit_id': req.blog.id,
-    'edit_title': req.blog.title,
-    'edit_body': req.blog.body,
-    'edit_url': req.blog.url,
-  }});
-});
-
-app.post('/blog/:id/edit', UserAccount.requireLogin, BlogPost.loadOne, function(req, res) {
-  req.blog.title = req.body.blog.title;
-  req.blog.body = req.body.blog.body;
-  req.blog.url = req.body.blog.url;
-  post.modified = new Date().getTime();
-  req.blog.save();
-  res.redirect('/blog/' + req.blog._id);
-});
-
-app.get('/blog', BlogPost.loadAll, BlogPost.count, function(req, res) {
-  res.render('blog_all', {locals: {
-    'title': 'Blogs',
-    'blogs': req.blogs,
-    'pager': {
-      'start': (req.query.page * 10) - 9,
-      'range': req.query.page * 10,
-      'total': req.blog_count,
-      'active': req.query.page,
-    }
-  }});
+app.get('/blog', function(req, res) {
+  BlogPost.loadAll(req.query.page, function(data) {
+    res.render('blog_all', {locals: {
+      'title': 'Blogs',
+      'blogs': data.docs,
+      'pager': {
+        'start': data.pager.start,
+        'range': data.pager.range,
+        'total': data.pager.count,
+        'active': data.pager.active,
+      }
+    }});
+  });
 });
 
 app.get('/error/:type', function(req, res) {
@@ -209,6 +145,25 @@ app.get('/view/:type/:id', function(req, res) {
       'title': docs.title,
       'data': docs
     }});
+  });
+});
+
+// @todo allow view overrides? has_template?
+app.get('/view/:type', function(req, res) {
+  data_obj = Data.getType(req.params.type);
+  data_obj.loadAll(req.query.page, function(data) {
+console.log(data);
+    res.render('list', {locals: {
+      'title': 'List',
+      'data': data.docs,
+      'type': req.params.type,
+      'pager': {
+        'start': data.pager.start,
+        'range': data.pager.range,
+        'total': data.pager.count,
+        'active': data.pager.active,
+      }
+    }}); 
   });
 });
 

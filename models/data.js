@@ -4,9 +4,49 @@ mongoose.connect('mongodb://localhost/kh');
 var Schema = mongoose.Schema
   , ObjectId = Schema.ObjectId;
 
+var DataDef = function() {
+  this.loadOne = function(id, next) {
+    this.model.findOne({_id: id}, function(err, docs) {
+      if (!docs) {
+        docs = {};
+      }
+      next(docs);
+    });
+  }
+  this.loadAll = function(page, next) {
+    if (typeof page == 'undefined') {
+      page = 1;
+    }
+    record_skip = (page - 1) * 10;
+    data_object = this;
+    this.model.find({}, [], {sort: [['created', -1]], skip: record_skip, limit: 10}, function(err, docs) {
+      if (!docs) {
+        docs = {};
+      }
+      data_object.model.find().count(function(err, count) {
+        if (!count) {
+          count = 0;
+        }
+        next({'pager': {
+            'count': count, 
+            'range': count > 10 ? page * 10 : count, 
+            'active': page, 
+            'start': (page * 10) - 9
+          }, 
+          'docs': docs}
+        );
+      });
+    });
+  }
+  this.count = function(docs, next) {
+  }
+}
+
 /**
  * ToDo Model
  */
+var ToDoData = new DataDef();
+
 var ToDo = new Schema({
   user: ObjectId,
   title: String,
@@ -16,50 +56,35 @@ var ToDo = new Schema({
 });
 
 mongoose.model('ToDo', ToDo);
+ToDoData.model = mongoose.model('ToDo');
 
-var ToDoData = {
-  model: mongoose.model('ToDo'),
-  form: {
-    'title': 'New To Do',
-    'method': 'post',
-    'action': '/create/new/todo',
-    'elements': {
-      'title': {
-        'type': 'textfield',
-        'title': 'Title',  
-        'value': '',
-        'attrs': {
-        }
-      },
-      'body': {
-        'type': 'textarea',
-        'title': 'Body',  
-        'value': '',
-        'attrs': {
-          'rows': 20,
-          'cols': 80,
-        }
-      },
-      'submit': {
-        'type': 'submit',
-        'value': 'Save',  
-        'attrs': {
-        }
-      },
-    },
-  },
-  loadOne: function(id, next) {
-    ToDoData.model.findOne({_id: id}, function(err, docs) {
-      if (!docs) {
-        // @todo what's the best way to integrate res here?
-        //req.flash('error', 'Post not found.');
-        //res.redirect('/error/404');
-        next({});
-      } 
-      else {
-        next(docs); 
+ToDoData.form = {
+  'title': 'New To Do',
+  'method': 'post',
+  'action': '/create/new/todo',
+  'elements': {
+    'title': {
+      'type': 'textfield',
+      'title': 'Title',  
+      'value': '',
+      'attrs': {
       }
-    });
+    },
+    'body': {
+      'type': 'textarea',
+      'title': 'Body',  
+      'value': '',
+      'attrs': {
+        'rows': 20,
+        'cols': 80,
+      }
+    },
+    'submit': {
+      'type': 'submit',
+      'value': 'Save',  
+      'attrs': {
+      }
+    },
   },
 };
 
@@ -68,6 +93,8 @@ module.exports.ToDo = ToDoData;
 /**
  * Blog Post Model
  */
+var BlogData = new DataDef();
+
 var Blog = new Schema({
   user: ObjectId,
   title: String,
@@ -78,90 +105,57 @@ var Blog = new Schema({
 });
 
 mongoose.model('Blog', Blog);
+BlogData.model = mongoose.model('Blog'),
 
-var BlogData = {
-  model: mongoose.model('Blog'),
-  form: {
-    'title': 'New Blog Post',
-    'method': 'post',
-    'action': '/create/new/blog',
-    'elements': {
-      'title': {
-        'title': 'Title',
-        'type': 'textfield',
-        'attrs': {
-          'size': 80,
-        },
+BlogData.form = {
+  'title': 'New Blog Post',
+  'method': 'post',
+  'action': '/create/new/blog',
+  'elements': {
+    'title': {
+      'title': 'Title',
+      'type': 'textfield',
+      'value': '',
+      'attrs': {
+        'size': 80,
       },
-      'body': {
-        'title': 'body',
-        'type': 'textarea',
-        'attrs': {
-          'rows': 20,
-          'cols': 80,
-        }
+    },
+    'body': {
+      'title': 'body',
+      'type': 'textarea',
+      'value': '',
+      'attrs': {
+        'rows': 20,
+        'cols': 80,
+      }
+    },
+    'url': {
+      'title': 'URL',
+      'type': 'textfield',
+      'value': '',
+      'attrs': {
+        'size': 80,
       },
-      'url': {
-        'title': 'URL',
-        'type': 'textfield',
-        'attrs': {
-          'size': 80,
-        },
-      },
-      'submit': {
-        'type': 'submit',
-        'value': 'Save',
-      },
-    }
-  },
-  loadOne: function(id, next) {
-    BlogData.model.findOne({_id: id}, function(err, docs) {
-      if (!docs) {
-        // @todo what's the best way to integrate flash and redirection?
-        //req.flash('error', 'Post not found.');
-        //res.redirect('/error/404');
-      } 
-      else {
-        next(docs); 
-      }
-    });
-  },
-  loadAll: function(req, res, next) {
-    if (typeof req.query.page == 'undefined') {
-      req.query.page = 1;
-    }
-    record_skip = (req.query.page - 1) * 10;
-    BlogData.model.find({}, [], {sort: [['created', -1]], skip: record_skip, limit: 10}, function(err, docs) {
-      if (!docs) {
-        req.flash('error', 'No posts found.');
-        docs = {};
-      }
-      req.blogs = docs;
-      next();
-    });
-  },
-  count: function(req, res, next) {
-    BlogData.model.find().count(function(err, count) {
-      if (err) {
-        var count = 0;
-      }
-      req.blog_count = count;
-      next();
-    });
-  },
-  aliasLookup: function(req, res, next) {
-    BlogData.model.findOne({url: req.url}, function(err, docs) {
-      if (!docs) {
-        req.flash('error', 'Page Not Found');
-        res.redirect('/error/404');
-      }
-      else {
-        req.blog = docs;
-        next();
-      }
-    });
+    },
+    'submit': {
+      'type': 'submit',
+      'value': 'Save',
+    },
   }
 };
+
+BlogData.aliasLookup = function(req, res, next) {
+  BlogData.model.findOne({url: req.url}, function(err, docs) {
+    if (!docs) {
+      req.flash('error', 'Page Not Found');
+      res.redirect('/error/404');
+    }
+    else {
+      req.blog = docs;
+      next();
+    }
+  });
+}
 
 module.exports.Blog = BlogData;
 
