@@ -3,6 +3,6 @@
   article
     h3
       a(href: '/view/' + type + '/' + data[item]._id)= data[item].title
-    .body!= data[item].body
+    .body!= data[item].body.replace(/(\r\n|\n|\r)/gm,"<br />")
 - }
 .pager!= partial('pager', pager)

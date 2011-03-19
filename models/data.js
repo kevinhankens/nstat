@@ -100,6 +100,7 @@ var Blog = new Schema({
   title: String,
   body: String,
   url: String,
+  images: {},
   created: String,
   modified: String,
 });
@@ -136,6 +137,13 @@ BlogData.form = {
       'attrs': {
         'size': 80,
       },
+    },
+    'image': {
+       'title': 'Images',
+       'type': 'file',
+       'name': 'image',
+       'multi': true,
+       'value': '',
     },
     'submit': {
       'type': 'submit',

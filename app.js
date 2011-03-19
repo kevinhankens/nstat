@@ -1,5 +1,13 @@
-var express = require('express');
-var app = express.createServer();
+var express = require('express')
+  , form = require('connect-form')
+  , im = require('imagemagick')
+  , sys = require('sys')
+  , exec = require('child_process').exec;
+
+var app = express.createServer(
+  // connect-form middleware
+  form({ keepExtensions: true })
+);
 
 app.set('views', __dirname + '/views');
 app.set('partials', __dirname + '/views/partials');
@@ -73,7 +81,7 @@ app.post('/account', UserAccount.login, function(req, res) {
 app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   res.render('blog', {locals: {
     'title': req.blog.title,
-    'blog': req.blog,
+    'data': req.blog,
   }});
 });
 
@@ -125,15 +133,24 @@ app.get('/new/:type', function(req, res) {
 
 // @todo we need sanitation here.
 app.post('/new/:type', function(req, res) {
-  data_obj = Data.getType(req.params.type);
-  item = new data_obj.model();
-  item.type = req.params.type;
-  for (element in req.body) {
-    item[element] = req.body[element];
-  }
-  item.save();
+  req.form.complete(function(err, fields, files) {
+console.log(files);
+    data_obj = Data.getType(req.params.type);
+    item = new data_obj.model();
+    item.type = req.params.type;
+    for (field in fields) {
+      item[field] = fields[field];
+    }
+    item.images = {};
+    for (file in files) {
+      // @todo exception handling for bad paths
+      exec('convert ' + files[file].path + ' -resize 100x100 ' + __dirname + '/static/images/' + files[file].name);
+      item.images[file] = '/images/' + files[file].name;
+    }
 
-  res.redirect('/view/' + req.params.type + '/' + item._id);
+    item.save();
+    res.redirect('/view/' + req.params.type + '/' + item._id);
+  });
 });
 
 // @todo needs has_method and has_template checks
@@ -152,7 +169,6 @@ app.get('/view/:type/:id', function(req, res) {
 app.get('/view/:type', function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadAll(req.query.page, function(data) {
-console.log(data);
     res.render('list', {locals: {
       'title': 'List',
       'data': data.docs,

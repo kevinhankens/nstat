@@ -1,20 +1,19 @@
 !!! 5
 html
   head
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel: 'stylesheet', media: 'print',  href: '/stylesheets/print.css')
+    link(rel: 'stylesheet', href: '/stylesheets/screen.css')
+    link(rel: 'stylesheet', href: '/stylesheets/style.css')
+    script(type: 'text/javascript', src: '/js/jquery.js')
+    script(type: 'text/javascript', src: '/js/admin.js')
     title!= siteName
   body
-    #main
-      header
-        nav(class: 'clearfix')
-          a(href: '/') Home
-          a(href: '/blog') Blog
-          -if (loggedIn)
-            a(href: '/account') User Account
-            a(href: '/account/logout') Logout
-          -else
-            a(href: '/account') Login
-        h1!= title
-        - if (flashMessages.info.length || flashMessages.error.length)
-          #flash!= partial('flash')
-      #container!= body
+    #main(class: 'container')
+      div(class: 'span-15 prepend-1 append-1 last')
+        header
+          nav(class: 'clearfix')!= partial('nav')
+          h1!= title
+          - if (flashMessages.info.length || flashMessages.error.length)
+            #flash!= partial('flash')
+        #body!= body
+      div(class: 'span-6 append-1 last')!= partial('right_col')

@@ -1,2 +1,7 @@
 #admin-links!= partial('admin_links')
-article#blog= data.body
+- if (typeof data.images != 'undefined') 
+  #images
+    - for (image in data.images)
+      .image
+        img(src: data.images[image])
+article#blog!= data.body.replace(/(\r\n|\n|\r)/gm,"<br />")

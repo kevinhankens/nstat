@@ -4,6 +4,6 @@
     h3
       - url = typeof item.url != 'undefined' ? item.url : '/blog/' + item._id
       a(href: url)= item.title
-    .body!= item.body
+    .body!= item.body.replace(/(\r\n|\n|\r)/gm,"<br />")
 - });
 .pager!= partial('pager', pager)
