@@ -118,7 +118,7 @@ app.get('/error/:type', function(req, res) {
  * Generic Form Builder
  * @todo build authentication methods
  */
-app.get('/new/:type', UserAccount.requireLogin, function(req, res) {
+app.get('/new/:type', function(req, res) {
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
@@ -131,7 +131,7 @@ app.get('/new/:type', UserAccount.requireLogin, function(req, res) {
 });
 
 // @todo we need sanitation here.
-app.post('/new/:type', UserAccount.requireLogin, function(req, res) {
+app.post('/new/:type', function(req, res) {
   req.form.complete(function(err, fields, files) {
     data_obj = Data.getType(req.params.type);
     item = new data_obj.model();
@@ -140,12 +140,28 @@ app.post('/new/:type', UserAccount.requireLogin, function(req, res) {
       item[field] = fields[field];
     }
     item.images = {};
+
+    // Monthly subdirs
+    var d = new Date();
+    var month = d.getMonth();
+    var year = d.getFullYear();
+    var monthdir = year.toString() + month.toString();
+    var filedir_thumb = __dirname + '/static/images/thumbs/' + monthdir;
+    var filedir_full = __dirname + '/static/images/full/' + monthdir;
+
     for (file in files) {
       // @todo exception handling for bad paths
-      var filepath_thumb = __dirname + '/static/images/thumbs/' + files[file].name;
-      var filepath_full = __dirname + '/static/images/full/' + files[file].name;
-      exec('convert ' + files[file].path + ' -resize 100x100 ' + filepath_thumb + '; chmod 755 ' + filepath_thumb + '; mv ' + files[file].path + ' ' + filepath_full + '; chmod 755 ' + filepath_full);
-      item.images[file] = files[file].name;
+      //var filepath_thumb = filedir_thumb + '/' + files[file].name;
+      //var filepath_full = filedir_full + '/' + files[file].name;
+      exec('mkdir ' + filedir_thumb + '; ' +
+           'mkdir ' + filedir_full + '; ' +
+           'convert ' + files[file].path + ' -resize 100x100 ' + filedir_thumb + '/' + files[file].name + '; ' +
+           'chmod 755 ' + filedir_thumb + '/' + files[file].name + '; ' +
+           'mv ' + files[file].path + ' ' + filedir_full + '/' + files[file].name + '; ' +
+           'chmod 755 ' + filedir_full + '/' + files[file].name
+      );
+      item.images[file] = '/' + monthdir + '/' + files[file].name;
+
     }
 
     item.save();
