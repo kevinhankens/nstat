@@ -1,6 +1,5 @@
 var express = require('express')
   , form = require('connect-form')
-  , im = require('imagemagick')
   , sys = require('sys')
   , exec = require('child_process').exec;
 
@@ -14,15 +13,15 @@ app.set('partials', __dirname + '/views/partials');
 app.set('view engine', 'jade');
 
 app.configure(function() {
-  app.use(express.bodyDecoder());
-  app.use(express.cookieDecoder());
+  app.use(express.bodyParser());
+  app.use(express.cookieParser());
   app.use(express.session({
     key: 'secret-key',
     secret: 'secret-phrase-here'
   }));
   app.use(express.logger());
   app.use(express.errorHandler());
-  app.use(express.staticProvider(__dirname + '/static'));
+  app.use(express.static(__dirname + '/static'));
 });
 
 app.helpers(require(__dirname + '/helpers/helpers.js').helpers);
@@ -119,7 +118,7 @@ app.get('/error/:type', function(req, res) {
  * Generic Form Builder
  * @todo build authentication methods
  */
-app.get('/new/:type', function(req, res) {
+app.get('/new/:type', UserAccount.requireLogin, function(req, res) {
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
@@ -132,9 +131,8 @@ app.get('/new/:type', function(req, res) {
 });
 
 // @todo we need sanitation here.
-app.post('/new/:type', function(req, res) {
+app.post('/new/:type', UserAccount.requireLogin, function(req, res) {
   req.form.complete(function(err, fields, files) {
-console.log(files);
     data_obj = Data.getType(req.params.type);
     item = new data_obj.model();
     item.type = req.params.type;
@@ -144,8 +142,10 @@ console.log(files);
     item.images = {};
     for (file in files) {
       // @todo exception handling for bad paths
-      exec('convert ' + files[file].path + ' -resize 100x100 ' + __dirname + '/static/images/' + files[file].name);
-      item.images[file] = '/images/' + files[file].name;
+      var filepath_thumb = __dirname + '/static/images/thumbs/' + files[file].name;
+      var filepath_full = __dirname + '/static/images/full/' + files[file].name;
+      exec('convert ' + files[file].path + ' -resize 100x100 ' + filepath_thumb + '; chmod 755 ' + filepath_thumb + '; mv ' + files[file].path + ' ' + filepath_full + '; chmod 755 ' + filepath_full);
+      item.images[file] = files[file].name;
     }
 
     item.save();
@@ -216,7 +216,7 @@ app.post('/save/:type/:id', UserAccount.requireLogin, function(req, res) {
   });
 });
 
-app.get('/delete/:type/:id', function(req, res) {
+app.get('/delete/:type/:id', UserAccount.requireLogin, function(req, res) {
   res.render('delete_confirm', {locals: {
     title: 'Confirm',
     type: req.params.type,
@@ -224,7 +224,7 @@ app.get('/delete/:type/:id', function(req, res) {
   }});
 });
 
-app.get('/delete-confirm/:type/:id', function(req, res) {
+app.get('/delete-confirm/:type/:id', UserAccount.requireLogin, function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadOne(req.params.id, function(docs) {
     docs.remove();

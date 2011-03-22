@@ -3,5 +3,6 @@
   #images
     - for (image in data.images)
       .image
-        img(src: data.images[image])
+        a(href: '/images/full/' + data.images[image], class: 'lightbox')
+          img(src: '/images/thumbs/' + data.images[image])
 article#blog!= data.body.replace(/(\r\n|\n|\r)/gm,"<br />")

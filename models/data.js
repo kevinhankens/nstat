@@ -188,8 +188,8 @@ var UserData = {
         req.session.loggedIn = true;
         req.flash('info', 'You are now logged in.');
       }
+      next();
     });
-    next();
   },
   requireLogin: function(req, res, next) {
     if (!req.session.loggedIn) {
