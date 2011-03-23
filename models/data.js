@@ -38,6 +38,39 @@ var DataDef = function() {
       });
     });
   }
+  this.update = function(req, res, fields, files) {
+    for (field in fields) {
+      this.item[field] = fields[field];
+    }
+    this.item.images = {};
+
+    // Monthly subdirs
+    var d = new Date();
+    var month = d.getMonth();
+    var year = d.getFullYear();
+    var monthdir = year.toString() + month.toString();
+    var filedir_thumb = __dirname + '/static/images/thumbs/' + monthdir;
+    var filedir_full = __dirname + '/static/images/full/' + monthdir;
+
+    for (file in files) {
+      // @todo exception handling for bad paths
+      //var filepath_thumb = filedir_thumb + '/' + files[file].name;
+      //var filepath_full = filedir_full + '/' + files[file].name;
+      exec('mkdir ' + filedir_thumb + '; ' +
+           'mkdir ' + filedir_full + '; ' +
+           'convert ' + files[file].path + ' -resize 100x100 ' + filedir_thumb + '/' + files[file].name + '; ' +
+           'chmod 755 ' + filedir_thumb + '/' + files[file].name + '; ' +
+           'mv ' + files[file].path + ' ' + filedir_full + '/' + files[file].name + '; ' +
+           'chmod 755 ' + filedir_full + '/' + files[file].name
+      );
+      this.item.images[file] = '/' + monthdir + '/' + files[file].name;
+
+    }
+
+    this.item.save();
+    res.redirect('/view/' + req.params.type + '/' + this.item._id);
+
+  }
   this.count = function(docs, next) {
   }
 }
@@ -173,6 +206,7 @@ var User = new Schema({
   firstname: String,
   lastname: String,
   created: String,
+  modified: String,
 });
 
 mongoose.model('User', User);

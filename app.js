@@ -134,38 +134,9 @@ app.get('/new/:type', function(req, res) {
 app.post('/new/:type', function(req, res) {
   req.form.complete(function(err, fields, files) {
     data_obj = Data.getType(req.params.type);
-    item = new data_obj.model();
-    item.type = req.params.type;
-    for (field in fields) {
-      item[field] = fields[field];
-    }
-    item.images = {};
-
-    // Monthly subdirs
-    var d = new Date();
-    var month = d.getMonth();
-    var year = d.getFullYear();
-    var monthdir = year.toString() + month.toString();
-    var filedir_thumb = __dirname + '/static/images/thumbs/' + monthdir;
-    var filedir_full = __dirname + '/static/images/full/' + monthdir;
-
-    for (file in files) {
-      // @todo exception handling for bad paths
-      //var filepath_thumb = filedir_thumb + '/' + files[file].name;
-      //var filepath_full = filedir_full + '/' + files[file].name;
-      exec('mkdir ' + filedir_thumb + '; ' +
-           'mkdir ' + filedir_full + '; ' +
-           'convert ' + files[file].path + ' -resize 100x100 ' + filedir_thumb + '/' + files[file].name + '; ' +
-           'chmod 755 ' + filedir_thumb + '/' + files[file].name + '; ' +
-           'mv ' + files[file].path + ' ' + filedir_full + '/' + files[file].name + '; ' +
-           'chmod 755 ' + filedir_full + '/' + files[file].name
-      );
-      item.images[file] = '/' + monthdir + '/' + files[file].name;
-
-    }
-
-    item.save();
-    res.redirect('/view/' + req.params.type + '/' + item._id);
+    data_obj.item = new data_obj.model();
+    data_obj.item.type = req.params.type;
+    data_obj.update(req, res, fields, files);
   });
 });
 
@@ -221,14 +192,12 @@ app.get('/edit/:type/:id', UserAccount.requireLogin, function(req, res) {
 });
 
 app.post('/save/:type/:id', UserAccount.requireLogin, function(req, res) {
-  data_obj = Data.getType(req.params.type);
-  data_obj.loadOne(req.params.id, function(docs) {
-    for (element in req.body) {
-      docs[element] = req.body[element];
-    }
-    docs.save();
-
-    res.redirect('/view/' + req.params.type + '/' + req.params.id);
+  req.form.complete(function(err, fields, files) {
+    data_obj = Data.getType(req.params.type);
+    data_obj.loadOne(req.params.id, function(docs) {
+      data_obj.item = docs;
+      data_obj.update(req, res, fields, files);
+    });
   });
 });
 
