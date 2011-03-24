@@ -56,7 +56,7 @@ var DataDef = function() {
       // @todo exception handling for bad paths
       //var filepath_thumb = filedir_thumb + '/' + files[file].name;
       //var filepath_full = filedir_full + '/' + files[file].name;
-      exec('mkdir ' + filedir_thumb + '; ' +
+      this.exec('mkdir ' + filedir_thumb + '; ' +
            'mkdir ' + filedir_full + '; ' +
            'convert ' + files[file].path + ' -resize 100x100 ' + filedir_thumb + '/' + files[file].name + '; ' +
            'chmod 755 ' + filedir_thumb + '/' + files[file].name + '; ' +

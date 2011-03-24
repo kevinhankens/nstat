@@ -135,6 +135,7 @@ app.post('/new/:type', function(req, res) {
   req.form.complete(function(err, fields, files) {
     data_obj = Data.getType(req.params.type);
     data_obj.item = new data_obj.model();
+    data_obj.exec = exec;
     data_obj.item.type = req.params.type;
     data_obj.update(req, res, fields, files);
   });
@@ -194,6 +195,7 @@ app.get('/edit/:type/:id', UserAccount.requireLogin, function(req, res) {
 app.post('/save/:type/:id', UserAccount.requireLogin, function(req, res) {
   req.form.complete(function(err, fields, files) {
     data_obj = Data.getType(req.params.type);
+    data_obj.exec = exec;
     data_obj.loadOne(req.params.id, function(docs) {
       data_obj.item = docs;
       data_obj.update(req, res, fields, files);
