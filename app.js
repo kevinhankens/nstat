@@ -28,7 +28,7 @@ app.helpers(require(__dirname + '/helpers/helpers.js').helpers);
 app.dynamicHelpers(require(__dirname + '/helpers/dynamicHelpers.js').dynamicHelpers);
 
 // Models
-Data = require(__dirname + '/models/data.js');
+Data = require(__dirname + '/models.js');
 BlogPost = Data.Blog;
 ToDo = Data.ToDo;
 UserAccount = Data.User;
