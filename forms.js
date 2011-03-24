@@ -1,6 +1,9 @@
 module.exports.Form = function(def) {
   this.def = def;
   this.renderedForm = '';
+  /**
+   * Render an HTML form based on a JSON spec.
+   */
   this.renderForm = function() {
     var renderedForm = '<form method="' 
       + this.def.method 
@@ -9,18 +12,28 @@ module.exports.Form = function(def) {
     for(element in this.def.elements) {
       var title = typeof this.def.elements[element].title != 'undefined' ? '<h5>' + this.def.elements[element].title + '</h5>'  : '';
       var tag = '';
-      var attrs = this.renderAttrs(element);
-
       if (this.def.elements[element].multi) {
+
+        // For mulitple-value tags, iterate over the value object. This is 
+        // either the form defaults or the object loaded from the db.
         for (key in this.def.elements[element].value) {
           var value = this.def.elements[element].value[key]
-          tag += this.renderElement(this.def.elements[element].type, value, attrs);
+          tag += this.renderTag(element, value);
         }
+
+        // Multi-items with no value (new) need at least one form element.
+        if (tag == '') {
+          tag += this.renderTag(element, {});
+        }
+
+        // Additional items will be added via client-side js.
         multi = ' multi';
         add = '<div class="form-add" ord="1">Add another</div>';
       }
       else {
-        tag = this.renderElement(this.def.elements[element].type, this.def.elements[element].value, attrs);
+
+        // Single-value tags.
+        tag = this.renderTag(element, this.def.elements[element].value);
         multi = ''
         add = '';
       }
@@ -29,8 +42,18 @@ module.exports.Form = function(def) {
     }
     return renderedForm + '</form>';
   }
-  this.renderElement = function(type, value, attrs) {
+  /**
+   * Render a specific tag.
+   * @param string element
+   * @param unknown value
+   */
+  this.renderTag = function(element, value) {
+
+    var type = this.def.elements[element].type
+    var attrs = this.renderAttrs(element);
     var tag = '';
+
+    // Each tag needs separage handling because of attributes, value handling, etc.
     switch(type) {
       case 'textarea':
         var value = typeof value != 'undefined' ? value : '';
@@ -43,7 +66,13 @@ module.exports.Form = function(def) {
 
     return tag
   }
+  /**
+   * Render attributes for a tag.
+   * @param string element
+   */
   this.renderAttrs = function(element) {
+    // Iterate over the attributes in the form definition and return them
+    // to be printed with the tag.
     if (typeof this.def.elements[element].attrs != 'undefined') {
       var attrs = '';
       for (attr in this.def.elements[element].attrs) {
