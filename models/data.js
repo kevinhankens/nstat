@@ -171,10 +171,10 @@ BlogData.form = {
         'size': 80,
       },
     },
-    'image': {
+    'images': {
        'title': 'Images',
        'type': 'file',
-       'name': 'image',
+       'name': 'images',
        'multi': true,
        'value': '',
     },
