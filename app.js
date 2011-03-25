@@ -42,8 +42,9 @@ Data.getType = function(type) {
 
 // Forms
 Forms = require(__dirname + '/forms.js');
+// Add a method that grabs the form JSON from the data def.
 Forms.getForm = function(type) {
-  return Data[Data.type_to_object[type]].form;
+  return Data[Data.type_to_object[type]].form();
 }
 
 // Routing
@@ -122,7 +123,6 @@ app.get('/new/:type', function(req, res) {
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
-
   res.render('edit_form', {locals: {
     'title': form_definition.title,
     'type': req.params.type,

@@ -121,34 +121,36 @@ var ToDo = new Schema({
 mongoose.model('ToDo', ToDo);
 ToDoData.model = mongoose.model('ToDo');
 
-ToDoData.form = {
-  'title': 'New To Do',
-  'method': 'post',
-  'action': '/create/new/todo',
-  'elements': {
-    'title': {
-      'type': 'textfield',
-      'title': 'Title',  
-      'value': '',
-      'attrs': {
-      }
+ToDoData.form = function() {
+  return {
+    'title': 'New To Do',
+    'method': 'post',
+    'action': '/create/new/todo',
+    'elements': {
+      'title': {
+        'type': 'textfield',
+        'title': 'Title',  
+        'value': '',
+        'attrs': {
+        }
+      },
+      'body': {
+        'type': 'textarea',
+        'title': 'Body',  
+        'value': '',
+        'attrs': {
+          'rows': 20,
+          'cols': 80,
+        }
+      },
+      'submit': {
+        'type': 'submit',
+        'value': 'Save',  
+        'attrs': {
+        }
+      },
     },
-    'body': {
-      'type': 'textarea',
-      'title': 'Body',  
-      'value': '',
-      'attrs': {
-        'rows': 20,
-        'cols': 80,
-      }
-    },
-    'submit': {
-      'type': 'submit',
-      'value': 'Save',  
-      'attrs': {
-      }
-    },
-  },
+  };
 };
 
 module.exports.ToDo = ToDoData;
@@ -171,48 +173,50 @@ var Blog = new Schema({
 mongoose.model('Blog', Blog);
 BlogData.model = mongoose.model('Blog'),
 
-BlogData.form = {
-  'title': 'New Blog Post',
-  'method': 'post',
-  'action': '/create/new/blog',
-  'elements': {
-    'title': {
-      'title': 'Title',
-      'type': 'textfield',
-      'value': '',
-      'attrs': {
-        'size': 80,
+BlogData.form = function() { 
+  return {
+    'title': 'New Blog Post',
+    'method': 'post',
+    'action': '/create/new/blog',
+    'elements': {
+      'title': {
+        'title': 'Title',
+        'type': 'textfield',
+        'value': '',
+        'attrs': {
+          'size': 80,
+        },
       },
-    },
-    'body': {
-      'title': 'body',
-      'type': 'textarea',
-      'value': '',
-      'attrs': {
-        'rows': 20,
-        'cols': 80,
-      }
-    },
-    'url': {
-      'title': 'URL',
-      'type': 'textfield',
-      'value': '',
-      'attrs': {
-        'size': 80,
+      'body': {
+        'title': 'body',
+        'type': 'textarea',
+        'value': '',
+        'attrs': {
+          'rows': 20,
+          'cols': 80,
+        }
       },
-    },
-    'images': {
-       'title': 'Images',
-       'type': 'file',
-       'name': 'images',
-       'multi': true,
-       'value': '',
-    },
-    'submit': {
-      'type': 'submit',
-      'value': 'Save',
-    },
-  }
+      'url': {
+        'title': 'URL',
+        'type': 'textfield',
+        'value': '',
+        'attrs': {
+          'size': 80,
+        },
+      },
+      'images': {
+         'title': 'Images',
+         'type': 'file',
+         'name': 'images',
+         'multi': true,
+         'value': '',
+      },
+      'submit': {
+        'type': 'submit',
+        'value': 'Save',
+      },
+    }
+  };
 };
 
 BlogData.aliasLookup = function(req, res, next) {
