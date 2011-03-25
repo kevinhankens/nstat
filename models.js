@@ -205,11 +205,12 @@ BlogData.form = function() {
         },
       },
       'images': {
-         'title': 'Images',
-         'type': 'file',
-         'name': 'images',
-         'multi': true,
-         'value': '',
+        'title': 'Images',
+        'type': 'file',
+        'name': 'images',
+        'multi': true,
+        'attrs': {},
+        'value': '',
       },
       'submit': {
         'type': 'submit',

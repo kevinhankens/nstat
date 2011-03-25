@@ -16,9 +16,12 @@ module.exports.Form = function(def) {
 
         // For mulitple-value tags, iterate over the value object. This is 
         // either the form defaults or the object loaded from the db.
+        // @todo this should regex the prototype class instead of assuming to set it.
+        this.def.elements[element].attrs.class = 'prototype';
         for (key in this.def.elements[element].value) {
           var value = this.def.elements[element].value[key]
           tag += this.renderTag(element, value);
+          this.def.elements[element].attrs.class = '';
         }
 
         // Multi-items with no value (new) need at least one form element.
@@ -65,7 +68,8 @@ module.exports.Form = function(def) {
         // File items need a way of preserving their value, so if they are set,
         // we will just send them with a textfield.
         if (value != '') {
-          tag = '<input id="' + id + '-nstatvalue" name="' + id + '-nstatvalue" type="textfield" value="' + value + '"' + attrs + ' />';
+          var nstatvalue_attrs = attrs.replace(/prototype/, 'nstatvalue');
+          tag = '<input id="' + id + '-nstatvalue" name="' + id + '-nstatvalue" type="textfield" value="' + value + '"' + nstatvalue_attrs + ' />';
         }
         tag += '<input id="' + id + '" name="' + id + '" type="' +type + '"' + attrs + ' />';
         break;
