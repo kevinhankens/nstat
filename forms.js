@@ -23,7 +23,7 @@ module.exports.Form = function(def) {
 
         // Multi-items with no value (new) need at least one form element.
         if (tag == '') {
-          tag += this.renderTag(element, {});
+          tag += this.renderTag(element, '');
         }
 
         // Additional items will be added via client-side js.
@@ -52,15 +52,25 @@ module.exports.Form = function(def) {
     var type = this.def.elements[element].type
     var attrs = this.renderAttrs(element);
     var tag = '';
+    var value = typeof value != 'undefined' ? value : '';
+    var id = (this.def.elements[element].multi) ? 'input-multi-' : 'input-single-';
+    id += element + '-' + type;
 
     // Each tag needs separage handling because of attributes, value handling, etc.
     switch(type) {
       case 'textarea':
-        var value = typeof value != 'undefined' ? value : '';
-        tag = '<textarea id="form-' + element + '-input" name="' + element + '"' + attrs + '>' + value + '</textarea>';
+        tag = '<textarea id="' + id + '" name="' + id + '"' + attrs + '>' + value + '</textarea>';
+        break;
+      case 'file':
+        // File items need a way of preserving their value, so if they are set,
+        // we will just send them with a textfield.
+        if (value != '') {
+          tag = '<input id="' + id + '-nstatvalue" name="' + id + '-nstatvalue" type="textfield" value="' + value + '"' + attrs + ' />';
+        }
+        tag += '<input id="' + id + '" name="' + id + '" type="' +type + '"' + attrs + ' />';
         break;
       default:
-        tag = '<input id="form-' + element + '-input" name="' + element + '" type="' +type + '" value="' + value + '"' + attrs + ' />';
+        tag = '<input id="' + id + '" name="' + id + '" type="' +type + '" value="' + value + '"' + attrs + ' />';
         break;
     }
 

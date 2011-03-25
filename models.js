@@ -39,10 +39,39 @@ var DataDef = function() {
     });
   }
   this.update = function(req, res, fields, files) {
-    for (field in fields) {
-      this.item[field] = fields[field];
-    }
+    // @todo This is temp - should be dependent upon the data def
     this.item.images = {};
+
+    for (field in fields) {
+      // Extract information via the field name. e.g. input-multi-images-nstatvalue
+      // The first item is not used, the second item denotes single/multi values,
+      // the third is the index to use in the data object and the last item denotes
+      // that this is a default value for input such as file items.
+      var field_info = field.match(/^input-([^-]+)-([^-]+)-([^-]+)[-]*(.*)$/);
+      var cardinality = field_info[1];
+      var data_index = field_info[2];
+      var field_type = field_info[3];
+      var default_value = field_info[4];
+
+      // The data object needs to be considerate of default values. This is a little
+      // weird, but basically if it is not a default value and not empty, then we
+      // know that it's an intended value. Else, if the field was empty, but has a
+      // corresponding default value, use that. Finally, if it is not a default value
+      // (which should never be captured), then we'll enter an empty string.
+      if (default_value == '' && fields[field] != '') {
+        // If the field is not empty and is not a default.
+        this.item[data_index] = fields[field];
+      }
+      else if (typeof fields[field + '-nstatvalue'] != 'undefined') {
+        // If the field is empty and has a default value.
+        this.item.images[data_index] = fields[field + '-nstatvalue'];
+      }
+      else if (default_value == '') {
+        // If the field is empty and has no default value.
+        // @todo should this default to a string?
+        this.item[data_index] = '';
+      }
+    }
 
     // Monthly subdirs
     var d = new Date();
