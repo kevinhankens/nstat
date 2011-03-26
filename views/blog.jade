@@ -1,6 +1,6 @@
 #admin-links!= partial('admin_links')
 - if (typeof data.images != 'undefined') 
-  #images
+  #images(class: 'span-3')
     - for (image in data.images)
       .image
         a(href: '/images/full' + data.images[image], class: 'lightbox')
