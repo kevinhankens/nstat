@@ -73,8 +73,10 @@ var DataDef = function() {
       }
     }
 
-    // Monthly subdirs
+    // Created/Modified dates and Monthly subdirs
     var d = new Date();
+    this.item['created'] = typeof this.item['created'] == 'undefined' ? d.getTime() : this.item['created'];
+    this.item['modified'] = d.getTime();
     var month = d.getMonth();
     var year = d.getFullYear();
     var monthdir = year.toString() + month.toString();

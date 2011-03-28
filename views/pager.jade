@@ -5,4 +5,4 @@ ul
     - p++
     - var class = p == pager.active ? 'active' : '';
     li
-      a(href: '/blog?page=' + p, 'class': class)= p
+      a(href: '/view/' + pager.type + '?page=' + p, 'class': class)= p

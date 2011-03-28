@@ -151,6 +151,7 @@ app.get('/view/:type', function(req, res) {
         'range': data.pager.range,
         'total': data.pager.count,
         'active': data.pager.active,
+        'type': req.params.type,
       }
     }}); 
   });

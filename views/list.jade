@@ -1,6 +1,6 @@
 .pager-status= 'Showing ' + pager.start + '-' + pager.range + ' of ' + pager.total
 - for (item in data) {
-  - var url = (typeof data[item].url != 'undefined') ? data[item].url : '/view/' + type + '/' + data[item]._id;
+  - var url = (typeof data[item].url != 'undefined' && data[item].url != '') ? data[item].url : '/view/' + type + '/' + data[item]._id;
   article
     h3
       a(href: url)= data[item].title
