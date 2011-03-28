@@ -85,21 +85,6 @@ app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   }});
 });
 
-app.get('/blog', function(req, res) {
-  BlogPost.loadAll(req.query.page, function(data) {
-    res.render('blog_all', {locals: {
-      'title': 'Blogs',
-      'blogs': data.docs,
-      'pager': {
-        'start': data.pager.start,
-        'range': data.pager.range,
-        'total': data.pager.count,
-        'active': data.pager.active,
-      }
-    }});
-  });
-});
-
 app.get('/error/:type', function(req, res) {
   var title = 'Access Denied';
   switch (req.params.type) {
@@ -119,7 +104,7 @@ app.get('/error/:type', function(req, res) {
  * Generic Form Builder
  * @todo build authentication methods
  */
-app.get('/new/:type', function(req, res) {
+app.get('/new/:type', UserAccount.requireLogin, function(req, res) {
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
@@ -131,7 +116,7 @@ app.get('/new/:type', function(req, res) {
 });
 
 // @todo we need sanitation here.
-app.post('/new/:type', function(req, res) {
+app.post('/new/:type', UserAccount.requireLogin, function(req, res) {
   req.form.complete(function(err, fields, files) {
     data_obj = Data.getType(req.params.type);
     data_obj.item = new data_obj.model();

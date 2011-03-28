@@ -1,8 +1,9 @@
 .pager-status= 'Showing ' + pager.start + '-' + pager.range + ' of ' + pager.total
 - for (item in data) {
+  - var url = (typeof data[item].url != 'undefined') ? data[item].url : '/view/' + type + '/' + data[item]._id;
   article
     h3
-      a(href: '/view/' + type + '/' + data[item]._id)= data[item].title
+      a(href: url)= data[item].title
     .body!= data[item].body.replace(/(\r\n|\n|\r)/gm,"<br />")
 - }
 .pager!= partial('pager', pager)
