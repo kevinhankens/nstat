@@ -4,6 +4,6 @@
   article
     h3
       a(href: url)= data[item].title
-    .body!= data[item].body.replace(/(\r\n|\n|\r)/gm,"<br />")
+    .body!= data[item].body.replace(/(\r\n|\n|\r)/gm,"<br />").replace(/\<\!--more--\>.*/, '')
 - }
 .pager!= partial('pager', pager)
