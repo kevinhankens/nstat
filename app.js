@@ -85,21 +85,6 @@ app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   }});
 });
 
-app.get('/error/:type', function(req, res) {
-  var title = 'Access Denied';
-  switch (req.params.type) {
-    case '404':
-      req.flash('error', 'Page not found.');
-      break;
-    case '403':
-      req.flash('error', 'Access denied.');
-      break;
-  }
-  res.render('error', {locals: {
-    title: 'Error',
-  }});
-});
-
 /**
  * Generic Form Builder
  * @todo build authentication methods
@@ -130,11 +115,17 @@ app.post('/new/:type', UserAccount.requireLogin, function(req, res) {
 app.get('/view/:type/:id', function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadOne(req.params.id, function(docs) {
+
+  if (docs.error == true) {
+    res.redirect('/error/404');
+  }
+  else {
     docs.type = req.params.type;
     res.render(req.params.type, {locals: {
       'title': docs.title,
       'data': docs
     }});
+  }
   });
 });
 
@@ -143,7 +134,7 @@ app.get('/view/:type', function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadAll(req.query.page, function(data) {
     res.render('list', {locals: {
-      'title': 'List',
+      'title': data_obj.title,
       'data': data.docs,
       'type': req.params.type,
       'pager': {
@@ -204,6 +195,27 @@ app.get('/delete-confirm/:type/:id', UserAccount.requireLogin, function(req, res
     req.flash('info', 'Deleted!');
     res.redirect('/');
   });
+});
+
+// Defaults and error handling.
+app.get('/error/:type', function(req, res) {
+  switch (req.params.type) {
+    case '404':
+      var title = 'Sorry, the page you were looking for was not found.';
+      req.flash('error', 'Page not found.');
+      break;
+    case '403':
+      var title = 'Access Denied';
+      req.flash('error', 'Access denied.');
+      break;
+  }
+  res.render('error', {locals: {
+    title: title,
+  }});
+});
+
+app.get('*', function(req, res) {
+  res.redirect('/error/404');
 });
 
 app.listen(3000);

@@ -5,10 +5,11 @@ var Schema = mongoose.Schema
   , ObjectId = Schema.ObjectId;
 
 var DataDef = function() {
+  this.title = 'Data';
   this.loadOne = function(id, next) {
     this.model.findOne({_id: id}, function(err, docs) {
       if (!docs) {
-        docs = {};
+        docs = {error: true};
       }
       next(docs);
     });
@@ -161,6 +162,7 @@ module.exports.ToDo = ToDoData;
  * Blog Post Model
  */
 var BlogData = new DataDef();
+BlogData.title = 'Blog';
 
 var Blog = new Schema({
   user: ObjectId,
