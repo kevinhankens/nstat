@@ -79,6 +79,7 @@ app.post('/account', UserAccount.login, function(req, res) {
 });
 
 app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
+  req.blog.type = 'blog';
   res.render('blog', {locals: {
     'title': req.blog.title,
     'data': req.blog,

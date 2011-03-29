@@ -87,6 +87,8 @@ var DataDef = function() {
 
     for (file in files) {
       // @todo exception handling for bad paths
+      // @todo other image types - why does png fail?
+      // @todo add ordinals to avoid overwriting. fs.stat()? 
       //var filepath_thumb = filedir_thumb + '/' + files[file].name;
       //var filepath_full = filedir_full + '/' + files[file].name;
       exec('mkdir ' + filedir_thumb + '; ' +
