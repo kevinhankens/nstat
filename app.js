@@ -27,6 +27,9 @@ app.configure(function() {
 app.helpers(require(__dirname + '/helpers/helpers.js').helpers);
 app.dynamicHelpers(require(__dirname + '/helpers/dynamicHelpers.js').dynamicHelpers);
 
+// Config
+Config = require(__dirname + '/config.js');
+
 // Models
 Data = require(__dirname + '/models.js');
 BlogPost = Data.Blog;
@@ -49,8 +52,9 @@ Forms.getForm = function(type) {
 
 // Routing
 app.get('/', function(req, res) {
+  publicConfig = Config.settings.getPublic();
   res.render('home', {locals: {
-    'title': 'Kevin Hankens',
+    'Config': publicConfig,
   }});
 });
 
@@ -75,13 +79,16 @@ app.get('/account', function(req, res) {
 });
 
 app.post('/account', UserAccount.login, function(req, res) {
-  res.redirect('/account');
+  res.redirect('/');
 });
 
+// @todo url aliases need to become more generic - i.e. not tied to blog type.
 app.get('/content/:title', BlogPost.aliasLookup, function(req, res) {
   req.blog.type = 'blog';
+  publicConfig = Config.settings.getPublic();
+  publicConfig.page_title = req.blog.title;
   res.render('blog', {locals: {
-    'title': req.blog.title,
+    'Config': publicConfig,
     'data': req.blog,
   }});
 });
@@ -94,8 +101,10 @@ app.get('/new/:type', UserAccount.requireLogin, function(req, res) {
   form_definition = Forms.getForm(req.params.type);
   form_definition.action = '/new/' + req.params.type;
   var itemForm = new Forms.Form(form_definition);
+  publicConfig = Config.settings.getPublic();
+  publicConfig.page_title = form_definition.title;
   res.render('edit_form', {locals: {
-    'title': form_definition.title,
+    'Config': publicConfig,
     'type': req.params.type,
     'form': itemForm.renderForm(),
   }});
@@ -122,8 +131,10 @@ app.get('/view/:type/:id', function(req, res) {
   }
   else {
     docs.type = req.params.type;
+    publicConfig = Config.settings.getPublic();
+    publicConfig.page_title = docs.title;
     res.render(req.params.type, {locals: {
-      'title': docs.title,
+      'Config': publicConfig,
       'data': docs
     }});
   }
@@ -134,8 +145,10 @@ app.get('/view/:type/:id', function(req, res) {
 app.get('/view/:type', function(req, res) {
   data_obj = Data.getType(req.params.type);
   data_obj.loadAll(req.query.page, function(data) {
+    publicConfig = Config.settings.getPublic();
+    publicConfig.page_title = data_obj.title;
     res.render('list', {locals: {
-      'title': data_obj.title,
+      'Config': publicConfig,
       'data': data.docs,
       'type': req.params.type,
       'pager': {
@@ -162,8 +175,10 @@ app.get('/edit/:type/:id', UserAccount.requireLogin, function(req, res) {
     }
     var itemForm = new Forms.Form(form_definition);
 
+    publicConfig = Config.settings.getPublic();
+    publicConfig.page_title = form_definition.title;
     res.render('edit_form', {locals: {
-      'title': form_definition.title,
+      'Config': publicConfig,
       'type': req.params.type,
       'form': itemForm.renderForm(),
     }});
@@ -182,8 +197,10 @@ app.post('/save/:type/:id', UserAccount.requireLogin, function(req, res) {
 });
 
 app.get('/delete/:type/:id', UserAccount.requireLogin, function(req, res) {
+  publicConfig = Config.settings.getPublic();
+  publicConfig.page_title = 'Confirm';
   res.render('delete_confirm', {locals: {
-    title: 'Confirm',
+    'Config': publicConfig,
     type: req.params.type,
     id: req.params.id,
   }});
@@ -210,8 +227,10 @@ app.get('/error/:type', function(req, res) {
       req.flash('error', 'Access denied.');
       break;
   }
+  publicConfig = Config.settings.getPublic();
+  publicConfig.page_title = title;
   res.render('error', {locals: {
-    title: title,
+    'Config': publicConfig,
   }});
 });
 
