@@ -154,3 +154,8 @@ nav a:hover {
   text-decoration: none;
   color: #333;
 }
+
+/** Home **/
+#welcome {
+  margin-bottom: 1em;
+}

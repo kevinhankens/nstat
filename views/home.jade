@@ -1,1 +1,5 @@
-Welcome Read my <a href="/view/blog">blog</a> or follow me on <a href="http://twitter.com/kevinhankens">twitter</a>.
+#welcome Read my <a href="/view/blog">blog</a>:&nbsp;
+  span(id: 'last-blog')!= last_blog.teaser
+  a(href: '/view/blog/' + last_blog._id) Read More
+#twitter Follow me on <a href="http://twitter.com/kevinhankens">twitter</a>:&nbsp;
+  span(id: 'last-tweet')

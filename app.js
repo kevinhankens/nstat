@@ -53,9 +53,16 @@ Forms.getForm = function(type) {
 // Routing
 app.get('/', function(req, res) {
   publicConfig = Config.settings.getPublic();
-  res.render('home', {locals: {
-    'Config': publicConfig,
-  }});
+  data_obj = Data.getType('blog');
+  data_obj.loadLatest(function(docs) {
+console.log(docs);
+    docs.teaser = docs.body.substring(0, 140);
+    docs.teaser = docs.teaser.replace(/\w+$/, '');
+    res.render('home', {locals: {
+      'last_blog': docs,
+      'Config': publicConfig,
+    }});
+  });
 });
 
 app.get('/account/logout', function(req, res) {

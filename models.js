@@ -14,6 +14,14 @@ var DataDef = function() {
       next(docs);
     });
   }
+  this.loadLatest = function(next) {
+    this.model.find({}, [], {sort: [['created', -1]], skip: 0, limit: 1}, function(err, docs) {
+      if (!docs) {
+        docs = {error: true};
+      }
+      next(docs[0]);
+    });
+  }
   this.loadAll = function(page, next) {
     if (typeof page == 'undefined') {
       page = 1;
